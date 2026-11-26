@@ -1,0 +1,11 @@
+v1.2 (2026-11-25)
+- Fixed the launcher so quoted custom output paths and paths ending in a
+  trailing backslash are sanitized correctly (no parenthesized % expansion).
+- Saved Check-Whisper-Preflight.ps1 as UTF-8 with BOM and replaced em
+  dashes with ASCII so Windows PowerShell 5.1 does not garble text.
+- Added MIT LICENSE.txt (Copyright 2026 Taylor Smith).
+
+v1.1
+- Hardened first public release: RAM, VRAM, FFmpeg, and local Whisper
+  binary preflight report.
+- 2026-11-25 (r2): Fixed default %~dp0 trailing backslash quote-escaping when run from folders containing spaces.
