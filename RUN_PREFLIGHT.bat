@@ -1,6 +1,7 @@
 @echo off
 setlocal DisableDelayedExpansion
-title Windows 11 Local Whisper Preflight & Model Fit Checker (v1.2)
+cd /d "%~dp0"
+title Windows 11 Local Whisper Preflight ^& Model Fit Checker (v1.2)
 
 :START
 cls
