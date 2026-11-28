@@ -52,9 +52,10 @@ if ($gpuSummary.Count -eq 0) {
         $name = $ad.Name
         $qwGB = 0.0
         if ($ad.PNPDeviceID) {
-            $subKeys = @(Get-ChildItem -Path $regBase -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\d{4}$' })
+            $subKeys = @(Get-ChildItem -LiteralPath $regBase -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\d{4}$' })
             foreach ($sk in $subKeys) {
-                $props = Get-ItemProperty -Path $sk.PSPath -ErrorAction SilentlyContinue
+                $props = Get-ItemProperty -LiteralPath $sk.PSPath -ErrorAction SilentlyContinue
+                if (-not $props) { continue }
                 $mId = if ($props.PSObject.Properties['MatchingDeviceId']) { [string]$props.MatchingDeviceId } else { "" }
                 $dId = [string]$ad.PNPDeviceID
                 if ($mId -and ($dId -like "*$($mId.Split('\')[-1])*")) {
@@ -65,11 +66,13 @@ if ($gpuSummary.Count -eq 0) {
                 }
             }
         }
-        if ($qwGB -gt 0) {
+        $dacType = if ($ad.PSObject.Properties['AdapterDACType'] -and $null -ne $ad.AdapterDACType) { [string]$ad.AdapterDACType } else { "" }
+        $isIntegrated = ($qwGB -lt 1.0) -or ($dacType -ieq "Internal")
+        if (-not $isIntegrated) {
             if ($qwGB -gt $maxVramGB) { $maxVramGB = $qwGB }
             $gpuSummary += "$name ($qwGB GB dedicated VRAM via Registry)"
         } else {
-            $gpuSummary += "$name (dedicated VRAM not reported by driver; shared iGPU RAM excluded)"
+            $gpuSummary += "$name (integrated/shared GPU memory via system RAM; excluded from dedicated VRAM)"
         }
     }
 }
